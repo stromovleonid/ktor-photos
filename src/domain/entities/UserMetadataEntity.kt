@@ -1,5 +1,5 @@
 package io.photos.domain.entities
 
-data class UserMetadataEntity(val id: Long, val username: Username): Entity
+data class UserMetadataEntity(val id: Long, val username: UsernameEntity): Entity
 
-data class Username(val username: String)
+data class UsernameEntity(val username: String): Entity

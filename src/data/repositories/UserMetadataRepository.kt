@@ -4,9 +4,9 @@ import domain.repositories.AbstractRepository
 import io.photos.data.providers.IdProvider
 import io.photos.domain.entities.ParamsValidator
 import io.photos.domain.entities.UserMetadataEntity
-import io.photos.domain.exceptions.DataNotFoundException
-import io.photos.domain.exceptions.RepositoryException
-import io.photos.domain.exceptions.UnsupportedRequestParamsException
+import data.exceptions.DataNotFoundException
+import data.exceptions.RepositoryException
+import data.exceptions.UnsupportedRequestParamsException
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.utils.Either
 import io.photos.domain.utils.ResultOk
@@ -28,12 +28,12 @@ class UserMetadataRepository(
 
     override fun performRead(params: UserMetadataRequestParams): Either<UserMetadataEntity, RepositoryException> {
         when (params) {
-            is UserMetadataRequestParams.FindUserMetadataByUsernameRequestParams -> {
+            is UserMetadataRequestParams.FindUserMetadataByExactUsernameRequestParams -> {
                 return users.find { it.username == params.username }
                     .let { metadata ->
                         if (metadata != null)
                             Either.Success(metadata)
-                        else Either.Failure(DataNotFoundException())
+                        else Either.Failure(DataNotFoundException(this::class, params))
                     }
             }
 
@@ -42,7 +42,7 @@ class UserMetadataRepository(
                     .let { metadata ->
                         if (metadata != null)
                             Either.Success(metadata)
-                        else Either.Failure(DataNotFoundException())
+                        else Either.Failure(DataNotFoundException(this::class, params))
                     }
             }
 

@@ -1,15 +1,15 @@
-package io.photos.domain.exceptions
+package data.exceptions
 
 import io.photos.domain.requests.RequestParams
 import java.lang.Exception
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 
 abstract class RepositoryException: Exception()
 
 class InvalidRequestParamsException(repositoryClass: KClass<*>,
                                     params: RequestParams,
-                                    validationException: ValidationException): RepositoryException() {
+                                    validationException: ValidationException
+): RepositoryException() {
     override val message = "Invalid params $params for class ${repositoryClass.simpleName} (${validationException.message})"
 
     override val cause = validationException
@@ -19,4 +19,6 @@ class UnsupportedRequestParamsException(params: RequestParams): RepositoryExcept
     override val message = "Unsupported params $params"
 }
 
-class DataNotFoundException: RepositoryException()
+class DataNotFoundException(repositoryClass: KClass<*>,params: RequestParams): RepositoryException() {
+    override val message = "Noting found for params $params in ${repositoryClass.simpleName}"
+}

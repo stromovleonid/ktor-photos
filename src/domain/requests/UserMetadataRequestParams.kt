@@ -1,18 +1,18 @@
 package io.photos.domain.requests
 
 import io.photos.domain.entities.ParamsValidator
-import io.photos.domain.entities.Username
-import io.photos.domain.exceptions.InvalidUserIdException
-import io.photos.domain.exceptions.InvalidUsernameException
-import io.photos.domain.exceptions.UnsupportedRequestParamsException
-import io.photos.domain.exceptions.ValidationException
+import io.photos.domain.entities.UsernameEntity
+import data.exceptions.InvalidUserIdException
+import data.exceptions.InvalidUsernameException
+import data.exceptions.UnsupportedRequestParamsException
+import data.exceptions.ValidationException
 import io.photos.domain.utils.Either
 import io.photos.domain.utils.ResultOk
 
 sealed class UserMetadataRequestParams : RequestParams {
-    data class CreateUserMetadataRequestParams(val username: Username) : UserMetadataRequestParams()
+    data class CreateUserMetadataRequestParams(val username: UsernameEntity) : UserMetadataRequestParams()
     data class FindUserMetadataByIdRequestParams(val id: Long) : UserMetadataRequestParams()
-    data class FindUserMetadataByUsernameRequestParams(val username: Username) : UserMetadataRequestParams()
+    data class FindUserMetadataByExactUsernameRequestParams(val username: UsernameEntity) : UserMetadataRequestParams()
 }
 
 
@@ -30,7 +30,7 @@ class UserMetadataRequestParamsValidator : ParamsValidator<UserMetadataRequestPa
                 else Either.Failure(InvalidUserIdException(params.id))
             }
 
-            is UserMetadataRequestParams.FindUserMetadataByUsernameRequestParams -> {
+            is UserMetadataRequestParams.FindUserMetadataByExactUsernameRequestParams -> {
                 return validateUsername(params.username)
             }
 
@@ -39,7 +39,7 @@ class UserMetadataRequestParamsValidator : ParamsValidator<UserMetadataRequestPa
     }
 
 
-    private fun validateUsername(username: Username): Either<ResultOk, ValidationException> {
+    private fun validateUsername(username: UsernameEntity): Either<ResultOk, ValidationException> {
         return username.let {
             if (it.username.length in (0..20))
                 Either.Success(ResultOk)

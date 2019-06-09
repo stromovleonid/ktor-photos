@@ -1,4 +1,4 @@
-package io.photos.domain.exceptions
+package data.exceptions
 
 import java.lang.IllegalArgumentException
 

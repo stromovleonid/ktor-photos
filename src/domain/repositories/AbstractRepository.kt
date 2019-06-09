@@ -2,8 +2,8 @@ package domain.repositories
 
 import io.photos.domain.entities.Entity
 import io.photos.domain.entities.ParamsValidator
-import io.photos.domain.exceptions.InvalidRequestParamsException
-import io.photos.domain.exceptions.RepositoryException
+import data.exceptions.InvalidRequestParamsException
+import data.exceptions.RepositoryException
 import io.photos.domain.requests.RequestParams
 import io.photos.domain.utils.Either
 import io.photos.domain.utils.ResultOk

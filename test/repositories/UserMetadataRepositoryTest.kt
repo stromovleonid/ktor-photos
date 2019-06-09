@@ -1,10 +1,13 @@
-package io.photos.repositories
+package repositories
 
-import io.photos.domain.entities.Username
+import invalidUsername
+import io.photos.domain.entities.UsernameEntity
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.utils.Either
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import longIdProvider
+import userMetadataRepository
+import userMetadataRequestsValidator
+import validUsername
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -29,7 +32,7 @@ class UserMetadataRepositoryTest {
         assertTrue {
             userMetadataRequestsValidator.validate(
                 UserMetadataRequestParams.CreateUserMetadataRequestParams(
-                    Username(validUsername)
+                    UsernameEntity(validUsername)
                 )
             ) is Either.Success
         }
@@ -37,7 +40,7 @@ class UserMetadataRepositoryTest {
         assertTrue {
             userMetadataRequestsValidator.validate(
                 UserMetadataRequestParams.CreateUserMetadataRequestParams(
-                    Username(invalidUsername)
+                    UsernameEntity(invalidUsername)
                 )
             ) is Either.Failure
         }
@@ -60,16 +63,16 @@ class UserMetadataRepositoryTest {
 
         assertTrue {
             userMetadataRequestsValidator.validate(
-                UserMetadataRequestParams.FindUserMetadataByUsernameRequestParams(
-                    Username(validUsername)
+                UserMetadataRequestParams.FindUserMetadataByExactUsernameRequestParams(
+                    UsernameEntity(validUsername)
                 )
             ) is Either.Success
         }
 
         assertTrue {
             userMetadataRequestsValidator.validate(
-                UserMetadataRequestParams.FindUserMetadataByUsernameRequestParams(
-                    Username(invalidUsername)
+                UserMetadataRequestParams.FindUserMetadataByExactUsernameRequestParams(
+                    UsernameEntity(invalidUsername)
                 )
             ) is Either.Failure
         }
@@ -79,19 +82,19 @@ class UserMetadataRepositoryTest {
     fun testRead() {
         userMetadataRepository.create(
             UserMetadataRequestParams.CreateUserMetadataRequestParams(
-                Username(
+                UsernameEntity(
                     validUsername
                 )
             )
         )
 
         val findByNameResult = userMetadataRepository.read(
-            UserMetadataRequestParams.FindUserMetadataByUsernameRequestParams(
-                Username(validUsername)
+            UserMetadataRequestParams.FindUserMetadataByExactUsernameRequestParams(
+                UsernameEntity(validUsername)
             )
         )
         assertTrue { findByNameResult is Either.Success }
-        assertTrue { (findByNameResult as Either.Success).result.username == Username(validUsername) }
+        assertTrue { (findByNameResult as Either.Success).result.username == UsernameEntity(validUsername) }
 
         val initial = longIdProvider.current()
 
@@ -109,7 +112,7 @@ class UserMetadataRepositoryTest {
         assertTrue {
             userMetadataRepository.create(
                 UserMetadataRequestParams.CreateUserMetadataRequestParams(
-                    Username(
+                    UsernameEntity(
                         validUsername
                     )
                 )
@@ -119,7 +122,7 @@ class UserMetadataRepositoryTest {
         assertTrue {
             userMetadataRepository.create(
                 UserMetadataRequestParams.CreateUserMetadataRequestParams(
-                    Username(
+                    UsernameEntity(
                         invalidUsername
                     )
                 )

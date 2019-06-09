@@ -1,5 +1,9 @@
 package io.photos.domain.utils
 
+import io.photos.domain.entities.Entity
+import io.photos.domain.mappers.EntityToModelMapper
+import io.photos.domain.model.Model
+
 sealed class Either<S, F> {
 
     data class Success<S, F>(val result: S) : Either<S, F>()
@@ -12,3 +16,16 @@ fun <S, F : Throwable> Either<S, F>.getOrThrow() =
         this.result
     else
         throw throw (this as Either.Failure).error
+
+private fun <S, F, MS, MF> Either<S, F>.mapBoth(resultMapper: S.() -> MS, failureMapper: F.() -> MF): Either<MS, MF> {
+    return if (this is Either.Success) Either.Success(this.result.resultMapper())
+    else Either.Failure((this as Either.Failure).error.failureMapper())
+}
+
+fun <S: Entity, F, MS: Model, MF> Either<S, F>.mapEntity(mapper: EntityToModelMapper<S, MS>, failureMapper: F.() -> MF): Either<MS, MF> {
+    return mapBoth({ mapper.toModel(this)}, failureMapper)
+}
+
+fun <S , F, MF> Either<S, F>.mapFailure(failureMapper: F.() -> MF): Either<S, MF> {
+    return mapBoth({this}, failureMapper)
+}
