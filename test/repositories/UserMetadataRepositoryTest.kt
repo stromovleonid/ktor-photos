@@ -1,12 +1,12 @@
 package repositories
 
+import Dependencies.longIdProvider
+import Dependencies.userMetadataRepository
+import Dependencies.userMetadataRequestsValidator
 import invalidUsername
 import io.photos.domain.entities.UsernameEntity
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.utils.Either
-import longIdProvider
-import userMetadataRepository
-import userMetadataRequestsValidator
 import validUsername
 import kotlin.test.Test
 import kotlin.test.assertEquals

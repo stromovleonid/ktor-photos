@@ -1,6 +1,7 @@
 package io.photos.domain.utils
 
 import io.photos.domain.entities.Entity
+import io.photos.domain.exceptions.UseCaseException
 import io.photos.domain.mappers.EntityToModelMapper
 import io.photos.domain.model.Model
 
@@ -22,10 +23,19 @@ private fun <S, F, MS, MF> Either<S, F>.mapBoth(resultMapper: S.() -> MS, failur
     else Either.Failure((this as Either.Failure).error.failureMapper())
 }
 
-fun <S: Entity, F, MS: Model, MF> Either<S, F>.mapEntity(mapper: EntityToModelMapper<S, MS>, failureMapper: F.() -> MF): Either<MS, MF> {
-    return mapBoth({ mapper.toModel(this)}, failureMapper)
+fun <S : Entity, F, MS : Model, MF> Either<S, F>.mapToModel(
+    mapper: EntityToModelMapper<S, MS>,
+    failureMapper: F.() -> MF
+): Either<MS, MF> {
+    return mapBoth({ mapper.toModel(this) }, failureMapper)
 }
 
-fun <S , F, MF> Either<S, F>.mapFailure(failureMapper: F.() -> MF): Either<S, MF> {
-    return mapBoth({this}, failureMapper)
+fun <S, F, MF> Either<S, F>.mapFailure(failureMapper: F.() -> MF): Either<S, MF> {
+    return mapBoth({ this }, failureMapper)
+}
+
+
+fun <S : Any, F : UseCaseException> Either<S, F>.toApiResponse(): Any {
+    return if (this is Either.Success) this.result
+    else (this as Either.Failure).error.apiMessage
 }

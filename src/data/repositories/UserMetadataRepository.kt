@@ -7,6 +7,7 @@ import io.photos.domain.entities.UserMetadataEntity
 import data.exceptions.DataNotFoundException
 import data.exceptions.RepositoryException
 import data.exceptions.UnsupportedRequestParamsException
+import io.photos.domain.entities.UsernameEntity
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.utils.Either
 import io.photos.domain.utils.ResultOk

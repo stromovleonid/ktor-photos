@@ -1,23 +1,25 @@
+import domain.repositories.Repository
 import domain.usecases.users.metadata.UserMetadataUseCase
-import io.photos.data.providers.LongIdProvider
+import io.photos.data.providers.IdProvider
 import io.photos.data.repositories.UserMetadataRepository
-import io.photos.domain.mappers.UserMetadataMapper
-import io.photos.domain.mappers.UsernameMapper
-import io.photos.domain.requests.UserMetadataRequestParamsValidator
-import io.photos.domain.utils.DispatchersProviderImpl
+import io.photos.domain.entities.ParamsValidator
+import io.photos.domain.entities.UserMetadataEntity
+import io.photos.domain.requests.UserMetadataRequestParams
+import io.photos.presentation.di.KoinContainer
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-val dispatchersProvider = DispatchersProviderImpl()
+const val validUsername = "valid"
+const val invalidUsername = "invalid 12345678901234567890"
 
-val usernameMapper = UsernameMapper()
-val userMetadataMapper = UserMetadataMapper(usernameMapper)
+object Dependencies: KoinComponent {
 
-val longIdProvider = LongIdProvider()
-val userMetadataRequestsValidator = UserMetadataRequestParamsValidator()
-val userMetadataRepository = UserMetadataRepository(longIdProvider, userMetadataRequestsValidator)
-val userMetadataUseCase = UserMetadataUseCase(
-    dispatchersProvider,
-    userMetadataRepository, usernameMapper, userMetadataMapper
-)
+    init {
+        KoinContainer.init()
+    }
 
-val validUsername = "valid"
-val invalidUsername = "invalid 12345678901234567890"
+    val userMetadataUseCase by inject<UserMetadataUseCase>()
+    val userMetadataRepository by inject<Repository<UserMetadataEntity, UserMetadataRequestParams>>()
+    val longIdProvider by inject<IdProvider<Long>>()
+    val userMetadataRequestsValidator by inject<ParamsValidator<UserMetadataRequestParams>>()
+}

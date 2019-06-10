@@ -4,31 +4,25 @@ import domain.repositories.Repository
 import io.photos.domain.entities.UserMetadataEntity
 import io.photos.domain.entities.UsernameEntity
 import data.exceptions.DataNotFoundException
-import io.photos.domain.exceptions.NotFoundException
-import io.photos.domain.exceptions.UnknownException
-import io.photos.domain.exceptions.UseCaseException
 import data.exceptions.ValidationException
-import io.photos.domain.exceptions.ModelValidationException
+import io.photos.domain.exceptions.*
 import io.photos.domain.mappers.Mapper
 import io.photos.domain.model.UserMetadataModel
-import io.photos.domain.model.UsernameModel
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.usecases.UseCase
 import io.photos.domain.utils.*
-import kotlinx.coroutines.Deferred
 
 class UserMetadataUseCase(
     dispatchersProvider: DispatchersProvider,
     private val repository: Repository<UserMetadataEntity, UserMetadataRequestParams>,
-    private val usernameMapper: Mapper<UsernameEntity, UsernameModel>,
     private val metadataMapper: Mapper<UserMetadataEntity, UserMetadataModel>
 ) : UseCase(dispatchersProvider) {
 
-    fun createAsync(username: UsernameModel): Deferred<Either<ResultOk, UseCaseException>> {
+    suspend fun create(username: String): Either<ResultOk, UseCaseException> {
         return onIOAsync {
             val result = repository.create(
                 UserMetadataRequestParams.CreateUserMetadataRequestParams(
-                    usernameMapper.toEntity(username)
+                    UsernameEntity(username)
                 )
             )
             result.mapFailure {
@@ -36,22 +30,31 @@ class UserMetadataUseCase(
                     ModelValidationException(this)
                 else UnknownException
             }
-        }
+        }.await()
     }
 
-    fun findByIdAsync(id: Long): Deferred<Either<UserMetadataModel, UseCaseException>> {
+    suspend fun findById(id: String?): Either<UserMetadataModel, UseCaseException> {
         return onIOAsync {
+
+            val longId = try {
+                id!!.toLong()
+            } catch(e: KotlinNullPointerException) {
+                return@onIOAsync Either.Failure<UserMetadataModel, UseCaseException>(InvalidParamsException(id))
+            } catch (e: NumberFormatException) {
+                return@onIOAsync Either.Failure<UserMetadataModel, UseCaseException>(ParseParamsException(id, Long::class))
+            }
+
             val result = repository.read(
                 UserMetadataRequestParams.FindUserMetadataByIdRequestParams(
-                    id
+                    longId
                 )
             )
 
-            result.mapEntity(metadataMapper) {
+            return@onIOAsync result.mapToModel(metadataMapper) {
                 if (this is DataNotFoundException)
                     NotFoundException
                 else UnknownException
             }
-        }
+        }.await()
     }
 }

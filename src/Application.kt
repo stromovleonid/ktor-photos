@@ -1,21 +1,25 @@
 package io.photos
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.html.*
-import kotlinx.html.*
-import kotlinx.css.*
-import io.ktor.gson.*
-import io.ktor.features.*
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.ContentNegotiation
+import io.ktor.gson.gson
+import io.ktor.http.ContentType
+import io.ktor.response.respondText
+import io.ktor.routing.get
+import io.ktor.routing.routing
+import io.photos.presentation.api.UsersApi.users
+import io.photos.presentation.di.KoinContainer
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+
+    KoinContainer.init()
+
     install(ContentNegotiation) {
         gson {
         }
@@ -25,5 +29,7 @@ fun Application.module(testing: Boolean = false) {
         get("/") {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
+
+        users()
     }
 }
