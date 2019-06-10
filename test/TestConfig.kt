@@ -1,7 +1,6 @@
 import domain.repositories.Repository
 import domain.usecases.users.metadata.UserMetadataUseCase
 import io.photos.data.providers.IdProvider
-import io.photos.data.repositories.UserMetadataRepository
 import io.photos.domain.entities.ParamsValidator
 import io.photos.domain.entities.UserMetadataEntity
 import io.photos.domain.requests.UserMetadataRequestParams

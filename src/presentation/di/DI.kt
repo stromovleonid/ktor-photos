@@ -41,7 +41,7 @@ val userMetadataModule = module {
     single<DispatchersProvider> { DispatchersProviderImpl() }
 
     single<Repository<UserMetadataEntity, UserMetadataRequestParams>> { UserMetadataRepository(get(), get()) }
-    single<IdProvider<Long>> { LongIdProvider() }
+    factory<IdProvider<Long>> { LongIdProvider() }
     single<ParamsValidator<UserMetadataRequestParams>> { UserMetadataRequestParamsValidator() }
 }
 

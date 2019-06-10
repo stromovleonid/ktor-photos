@@ -96,15 +96,13 @@ class UserMetadataRepositoryTest {
         assertTrue { findByNameResult is Either.Success }
         assertTrue { (findByNameResult as Either.Success).result.username == UsernameEntity(validUsername) }
 
-        val initial = longIdProvider.current()
-
         val findByIdResult = userMetadataRepository.read(
             UserMetadataRequestParams.FindUserMetadataByIdRequestParams(
-                initial
+                1L
             )
         )
         assertTrue { findByIdResult is Either.Success }
-        assertTrue { (findByIdResult as Either.Success).result.id == initial }
+        assertEquals((findByIdResult as Either.Success).result.id, 1L)
     }
 
     @Test
