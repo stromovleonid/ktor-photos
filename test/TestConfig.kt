@@ -9,6 +9,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 const val validUsername = "valid"
+const val secondValidUsername = "second"
 const val invalidUsername = "invalid 12345678901234567890"
 
 object Dependencies: KoinComponent {

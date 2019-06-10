@@ -20,6 +20,16 @@ object UsersApi: KoinComponent {
             val result = useCase.findById(call.parameters["id"])
             call.respond(result.getApiResponseCode(), result.toApiResponse())
         }
+
+        get("/users") {
+            val result = useCase.findAll(
+                call.request.queryParameters["query"],
+                call.request.queryParameters["ignoreCase"],
+                call.request.queryParameters["pageIndex"],
+                call.request.queryParameters["pageSize"]
+            )
+            call.respond(result.getApiResponseCode(), result.toApiResponse())
+        }
     }
 
 }

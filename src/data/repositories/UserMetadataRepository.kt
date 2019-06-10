@@ -4,7 +4,6 @@ import domain.repositories.AbstractRepository
 import io.photos.data.providers.IdProvider
 import io.photos.domain.entities.ParamsValidator
 import io.photos.domain.entities.UserMetadataEntity
-import data.exceptions.DataNotFoundException
 import data.exceptions.RepositoryException
 import data.exceptions.UnsupportedRequestParamsException
 import io.photos.domain.entities.UsernameEntity
@@ -28,23 +27,29 @@ class UserMetadataRepository(
     }
 
     override fun performRead(params: UserMetadataRequestParams): Either<UserMetadataEntity, RepositoryException> {
-        when (params) {
-            is UserMetadataRequestParams.FindUserMetadataByExactUsernameRequestParams -> {
-                return users.find { it.username == params.username }
-                    .let { metadata ->
-                        if (metadata != null)
-                            Either.Success(metadata)
-                        else Either.Failure(DataNotFoundException(this::class, params))
-                    }
+        return when (params) {
+            is UserMetadataRequestParams.FindUserMetadataByIdRequestParams -> {
+                users.find { it.id == params.id }
+                    .resultOrNotFound(params)
             }
 
-            is UserMetadataRequestParams.FindUserMetadataByIdRequestParams -> {
-                return users.find { it.id == params.id }
-                    .let { metadata ->
-                        if (metadata != null)
-                            Either.Success(metadata)
-                        else Either.Failure(DataNotFoundException(this::class, params))
-                    }
+            else -> throw UnsupportedRequestParamsException(params)
+        }
+    }
+
+
+    override fun performFindAll(params: UserMetadataRequestParams): Either<List<UserMetadataEntity>, RepositoryException> {
+        return when (params) {
+            is UserMetadataRequestParams.FindUserMetadataRequestParams -> {
+                val fromIndex = params.pageIndex * params.pageSize
+                val toIndex = (params.pageIndex + 1) * params.pageSize
+
+                if (fromIndex >= users.size) return Either.Success(emptyList())
+
+                val results = users.filter { it.username.username.contains(params.query, params.ignoreCase) }
+                Either.Success(
+                    results
+                    .subList(fromIndex, if (toIndex <= results.size) toIndex else results.size))
             }
 
             else -> throw UnsupportedRequestParamsException(params)

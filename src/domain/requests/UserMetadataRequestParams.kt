@@ -1,18 +1,20 @@
 package io.photos.domain.requests
 
+import data.exceptions.*
 import io.photos.domain.entities.ParamsValidator
 import io.photos.domain.entities.UsernameEntity
-import data.exceptions.InvalidUserIdException
-import data.exceptions.InvalidUsernameException
-import data.exceptions.UnsupportedRequestParamsException
-import data.exceptions.ValidationException
 import io.photos.domain.utils.Either
 import io.photos.domain.utils.ResultOk
 
 sealed class UserMetadataRequestParams : RequestParams {
     data class CreateUserMetadataRequestParams(val username: UsernameEntity) : UserMetadataRequestParams()
     data class FindUserMetadataByIdRequestParams(val id: Long) : UserMetadataRequestParams()
-    data class FindUserMetadataByExactUsernameRequestParams(val username: UsernameEntity) : UserMetadataRequestParams()
+    data class FindUserMetadataRequestParams(
+        val query: String,
+        val ignoreCase: Boolean,
+        val pageIndex: Int,
+        val pageSize: Int
+    ) : UserMetadataRequestParams()
 }
 
 
@@ -30,8 +32,12 @@ class UserMetadataRequestParamsValidator : ParamsValidator<UserMetadataRequestPa
                 else Either.Failure(InvalidUserIdException(params.id))
             }
 
-            is UserMetadataRequestParams.FindUserMetadataByExactUsernameRequestParams -> {
-                return validateUsername(params.username)
+            is UserMetadataRequestParams.FindUserMetadataRequestParams -> {
+                return if (params.pageIndex >= 0
+                    && params.pageSize < 101
+                )
+                    Either.Success(ResultOk)
+                else Either.Failure(InvalidParamsException(params))
             }
 
             else -> throw UnsupportedRequestParamsException(params)

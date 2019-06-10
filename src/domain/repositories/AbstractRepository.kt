@@ -1,5 +1,6 @@
 package domain.repositories
 
+import data.exceptions.DataNotFoundException
 import io.photos.domain.entities.Entity
 import io.photos.domain.entities.ParamsValidator
 import data.exceptions.InvalidRequestParamsException
@@ -13,6 +14,7 @@ interface Repository<E: Entity, P: RequestParams> {
     fun create(params: P): Either<ResultOk, RepositoryException>
 
     fun read(params: P): Either<E, RepositoryException>
+    fun findAll(params: P): Either<List<E>, RepositoryException>
 }
 
 
@@ -41,7 +43,19 @@ abstract class AbstractRepository<E: Entity, P: RequestParams>(private val valid
         performRead(params)
     }
 
+    override fun findAll(params: P): Either<List<E>, RepositoryException> = validateAndExecute(params) {
+        performFindAll(params)
+    }
+
     abstract fun performCreate(params: P): Either<ResultOk, RepositoryException>
 
     abstract fun performRead(params: P): Either<E, RepositoryException>
+
+    abstract fun performFindAll(params: P): Either<List<E>, RepositoryException>
+
+    protected fun <T: RequestParams, E> E?.resultOrNotFound(params: T): Either<E, RepositoryException> {
+        return if (this != null)
+            Either.Success(this)
+        else Either.Failure(DataNotFoundException(this@AbstractRepository::class, params))
+    }
 }

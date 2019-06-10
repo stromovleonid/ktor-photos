@@ -31,6 +31,13 @@ fun <S : Entity, F, MS : Model, MF> Either<S, F>.mapToModel(
     return mapBoth({ mapper.toModel(this) }, failureMapper)
 }
 
+fun <S : Entity, F, MS : Model, MF> Either<List<S>, F>.mapListToModel(
+    mapper: EntityToModelMapper<S, MS>,
+    failureMapper: F.() -> MF
+): Either<List<MS>, MF> {
+    return mapBoth({ map { mapper.toModel(it) } }, failureMapper)
+}
+
 fun <S, F, MF> Either<S, F>.mapFailure(failureMapper: F.() -> MF): Either<S, MF> {
     return mapBoth({ this }, failureMapper)
 }

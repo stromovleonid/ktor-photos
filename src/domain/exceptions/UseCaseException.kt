@@ -2,6 +2,7 @@ package io.photos.domain.exceptions
 
 import data.exceptions.ValidationException
 import io.ktor.http.HttpStatusCode
+import java.awt.event.FocusEvent
 import kotlin.reflect.KClass
 
 abstract class UseCaseException: Exception() {
@@ -29,7 +30,7 @@ class ModelValidationException(original: ValidationException): UseCaseException(
     override val cause = original
 }
 
-class InvalidParamsException(params: Any?): UseCaseException(){
+class InvalidParamsException(params: Any?, override val cause: Exception): UseCaseException() {
     override val apiMessage = "Invalid params $params"
 
     override val message = "Invalid params $params"

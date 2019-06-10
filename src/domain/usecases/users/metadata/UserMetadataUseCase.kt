@@ -11,6 +11,7 @@ import io.photos.domain.model.UserMetadataModel
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.usecases.UseCase
 import io.photos.domain.utils.*
+import java.lang.Exception
 
 class UserMetadataUseCase(
     dispatchersProvider: DispatchersProvider,
@@ -33,15 +34,57 @@ class UserMetadataUseCase(
         }.await()
     }
 
+    suspend fun findAll(
+        query: String?,
+        ignoreCase: String?,
+        pageIndex: String?,
+        pageSize: String?
+    ): Either<List<UserMetadataModel>, UseCaseException> {
+        return onIOAsync {
+            val result = try {
+                repository.findAll(
+                    UserMetadataRequestParams.FindUserMetadataRequestParams(
+                        query.orEmpty(),
+                        ignoreCase?.toBoolean() ?: true,
+                        pageIndex?.toInt() ?: 0,
+                        pageSize?.toInt() ?: 20
+                    )
+                )
+            } catch (e: Exception) {
+                return@onIOAsync Either.Failure<List<UserMetadataModel>, UseCaseException>(
+                    InvalidParamsException(
+                        mapOf(
+                            "query" to query,
+                            "ignoreCase" to ignoreCase,
+                            "pageIndex" to pageIndex,
+                            "pageSize" to pageSize
+                        ), e
+                    )
+                )
+            }
+
+            return@onIOAsync result.mapListToModel(metadataMapper) {
+                if (this is DataNotFoundException)
+                    NotFoundException
+                else UnknownException
+            }
+        }.await()
+    }
+
     suspend fun findById(id: String?): Either<UserMetadataModel, UseCaseException> {
         return onIOAsync {
 
             val longId = try {
                 id!!.toLong()
-            } catch(e: KotlinNullPointerException) {
-                return@onIOAsync Either.Failure<UserMetadataModel, UseCaseException>(InvalidParamsException(id))
+            } catch (e: KotlinNullPointerException) {
+                return@onIOAsync Either.Failure<UserMetadataModel, UseCaseException>(InvalidParamsException(id, e))
             } catch (e: NumberFormatException) {
-                return@onIOAsync Either.Failure<UserMetadataModel, UseCaseException>(ParseParamsException(id, Long::class))
+                return@onIOAsync Either.Failure<UserMetadataModel, UseCaseException>(
+                    ParseParamsException(
+                        id,
+                        Long::class
+                    )
+                )
             }
 
             val result = repository.read(
