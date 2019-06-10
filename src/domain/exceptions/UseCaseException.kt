@@ -1,17 +1,22 @@
 package io.photos.domain.exceptions
 
 import data.exceptions.ValidationException
+import io.ktor.http.HttpStatusCode
 import kotlin.reflect.KClass
 
 abstract class UseCaseException: Exception() {
 
     abstract val apiMessage: String
 
+    open val apiCode = HttpStatusCode.BadRequest
+
     override fun toString() = apiMessage
 }
 
 object NotFoundException: UseCaseException() {
     override val apiMessage = "Not found"
+
+    override val apiCode = HttpStatusCode.NotFound
 }
 
 object UnknownException: UseCaseException() {

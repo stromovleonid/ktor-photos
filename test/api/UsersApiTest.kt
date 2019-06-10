@@ -14,7 +14,7 @@ class UsersApiTest: ApiTest() {
 
         test {
             handleRequest(HttpMethod.Get, "/users/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals(HttpStatusCode.NotFound, response.status())
                 assertTrue { response.content?.contains("Not found") == true }
             }
         }

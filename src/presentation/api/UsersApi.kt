@@ -6,6 +6,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
+import io.photos.domain.utils.getApiResponseCode
 import io.photos.domain.utils.toApiResponse
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -16,7 +17,8 @@ object UsersApi: KoinComponent {
 
     fun Routing.users() {
         get("/users/{id}") {
-            call.respond(HttpStatusCode.OK, useCase.findById(call.parameters["id"]).toApiResponse())
+            val result = useCase.findById(call.parameters["id"])
+            call.respond(result.getApiResponseCode(), result.toApiResponse())
         }
     }
 

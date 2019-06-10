@@ -1,5 +1,6 @@
 package io.photos.domain.utils
 
+import io.ktor.http.HttpStatusCode
 import io.photos.domain.entities.Entity
 import io.photos.domain.exceptions.UseCaseException
 import io.photos.domain.mappers.EntityToModelMapper
@@ -38,4 +39,9 @@ fun <S, F, MF> Either<S, F>.mapFailure(failureMapper: F.() -> MF): Either<S, MF>
 fun <S : Any, F : UseCaseException> Either<S, F>.toApiResponse(): Any {
     return if (this is Either.Success) this.result
     else (this as Either.Failure).error.apiMessage
+}
+
+fun <S : Any, F : UseCaseException> Either<S, F>.getApiResponseCode(): HttpStatusCode {
+    return if (this is Either.Success) HttpStatusCode.OK
+    else (this as Either.Failure).error.apiCode
 }
