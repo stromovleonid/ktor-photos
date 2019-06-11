@@ -6,10 +6,12 @@ import io.photos.domain.entities.ParamsValidator
 import io.photos.domain.entities.UserMetadataEntity
 import data.exceptions.RepositoryException
 import data.exceptions.UnsupportedRequestParamsException
+import io.photos.domain.entities.AvatarEntity
 import io.photos.domain.entities.UsernameEntity
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.utils.Either
 import io.photos.domain.utils.ResultOk
+import java.util.*
 
 class UserMetadataRepository(
     private val idProvider: IdProvider<Long>,
@@ -17,11 +19,18 @@ class UserMetadataRepository(
 ) :
     AbstractRepository<UserMetadataEntity, UserMetadataRequestParams>(validator = paramsValidator) {
 
-    private val users = mutableListOf<UserMetadataEntity>()
+    private val users = mutableListOf<UserMetadataEntity>().apply {
+        add(UserMetadataEntity(1L, UsernameEntity("dsfd"), Date(), AvatarEntity("sdfsdf")))
+    }
 
     override fun performCreate(params: UserMetadataRequestParams): Either<ResultOk, RepositoryException> {
         params as UserMetadataRequestParams.CreateUserMetadataRequestParams
-        val newUser = UserMetadataEntity(idProvider.provideNext(), params.username)
+        val newUser = UserMetadataEntity(
+            idProvider.provideNext(),
+            params.username,
+            Date(),
+            AvatarEntity()
+        )
         users.add(newUser)
         return Either.Success(ResultOk)
     }
@@ -49,7 +58,8 @@ class UserMetadataRepository(
                 val results = users.filter { it.username.username.contains(params.query, params.ignoreCase) }
                 Either.Success(
                     results
-                    .subList(fromIndex, if (toIndex <= results.size) toIndex else results.size))
+                        .subList(fromIndex, if (toIndex <= results.size) toIndex else results.size)
+                )
             }
 
             else -> throw UnsupportedRequestParamsException(params)

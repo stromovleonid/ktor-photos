@@ -7,8 +7,8 @@ interface EntityToModelMapper<E: Entity, M: Model> {
     fun toModel(entity: E): M
 }
 
-interface ModelToEnityMapper<E: Entity, M: Model> {
+interface ModelToEntityMapper<E: Entity, M: Model> {
     fun toEntity(model: M): E
 }
 
-interface Mapper<E: Entity, M: Model>: EntityToModelMapper<E, M>, ModelToEnityMapper<E, M>
+interface Mapper<E: Entity, M: Model>: EntityToModelMapper<E, M>, ModelToEntityMapper<E, M>

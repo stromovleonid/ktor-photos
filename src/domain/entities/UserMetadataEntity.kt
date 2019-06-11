@@ -1,5 +1,14 @@
 package io.photos.domain.entities
 
-data class UserMetadataEntity(val id: Long, val username: UsernameEntity): Entity
+import java.util.*
 
-data class UsernameEntity(val username: String): Entity
+data class UserMetadataEntity(
+    val id: Long,
+    val username: UsernameEntity,
+    val createdAt: Date,
+    val avatar: AvatarEntity
+) : Entity
+
+data class UsernameEntity(val username: String) : Entity
+
+data class AvatarEntity(val url: String? = null) : Entity

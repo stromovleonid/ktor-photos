@@ -7,7 +7,6 @@ import io.photos.data.providers.LongIdProvider
 import io.photos.data.repositories.UserMetadataRepository
 import io.photos.domain.entities.ParamsValidator
 import io.photos.domain.entities.UserMetadataEntity
-import io.photos.domain.entities.UsernameEntity
 import io.photos.domain.mappers.Mapper
 import io.photos.domain.mappers.UserMetadataMapper
 import io.photos.domain.model.UserMetadataModel
