@@ -7,6 +7,8 @@ import io.photos.domain.entities.ParamsValidator
 import io.photos.domain.entities.UserIdEntity
 import io.photos.domain.utils.Either
 import io.photos.domain.utils.ResultOk
+import java.io.File
+import java.util.*
 
 sealed class PhotoRequestParams : RequestParams {
 
@@ -21,7 +23,11 @@ sealed class PhotoRequestParams : RequestParams {
         val pageSize: Int
     ) : PhotoRequestParams()
 
-    data class AddPhotoToUserRequestParams(val authorId: UserIdEntity, val photo: String) : PhotoRequestParams()
+    data class UploadPhotoRequestParams(
+        val authorId: UserIdEntity,
+        val photoFile: File,
+        val createdAt: Date
+    ) : PhotoRequestParams()
 }
 
 class PhotoRequestParamsValidator : ParamsValidator<PhotoRequestParams> {
@@ -40,6 +46,11 @@ class PhotoRequestParamsValidator : ParamsValidator<PhotoRequestParams> {
                     && params.pageSize < 101
                     && params.pageSize > 0
                 )
+                    Either.Success(ResultOk)
+                else Either.Failure(InvalidParamsException(params))
+            }
+            is PhotoRequestParams.UploadPhotoRequestParams -> {
+                return if (params.photoFile.exists())
                     Either.Success(ResultOk)
                 else Either.Failure(InvalidParamsException(params))
             }

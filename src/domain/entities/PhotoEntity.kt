@@ -7,6 +7,6 @@ data class PhotoEntity(val id: PhotoIdEntity,
                        val url: String,
                        val metadata: PhotoMetadataEntity): Entity
 
-data class PhotoMetadataEntity(val width: Int, val height: Int, val createdAt: Date): Entity
+data class PhotoMetadataEntity(val createdAt: Date): Entity
 
 data class PhotoIdEntity(val id: Long)

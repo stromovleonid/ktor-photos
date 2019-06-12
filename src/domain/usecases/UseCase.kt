@@ -6,7 +6,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlin.coroutines.CoroutineContext
 
-abstract class UseCase(private val dispatchersProvider: DispatchersProvider) {
+abstract class UseCase(protected val dispatchersProvider: DispatchersProvider) {
 
     protected fun <R> onIOAsync(block: UseCase.() -> R) = performAsync(dispatchersProvider.io, block)
 

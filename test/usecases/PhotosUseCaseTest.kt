@@ -1,6 +1,7 @@
 package usecases
 
 import Dependencies.photosUseCase
+import io.ktor.http.content.MultiPartData
 import io.photos.domain.utils.Either
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -35,6 +36,17 @@ class PhotosUseCaseTest {
 
         val validFeed = photosUseCase.feed("0", "100")
         assertTrue { (validRequest as Either.Success).result != (validFeed as Either.Success).result }
+    }
+
+    @Test
+    fun testUpload() = runBlocking {
+        photosUseCase.uploadPhoto(null, MultiPartData.Empty).run {
+            assertTrue { this.isFailure() }
+        }
+
+        photosUseCase.uploadPhoto(-1, MultiPartData.Empty).run {
+            assertTrue { this.isFailure() }
+        }
 
     }
 }

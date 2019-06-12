@@ -6,6 +6,8 @@ import io.photos.domain.entities.UserIdEntity
 import io.photos.domain.requests.PhotoRequestParams
 import io.photos.domain.utils.Either
 import org.junit.Test
+import java.io.File
+import java.util.*
 import kotlin.test.assertTrue
 
 class PhotosRepositoryTest {
@@ -34,6 +36,14 @@ class PhotosRepositoryTest {
         assertTrue { photoParamsValidator.validate(
             PhotoRequestParams.FindPhotosOfUserRequestParams(UserIdEntity(1L), -10, 100)
         ) is Either.Failure}
+
+        assertTrue { photoParamsValidator.validate(
+            PhotoRequestParams.UploadPhotoRequestParams(UserIdEntity(1L), File("dont exist"), Date())
+        ) is Either.Failure}
+
+        assertTrue { photoParamsValidator.validate(
+            PhotoRequestParams.UploadPhotoRequestParams(UserIdEntity(1L), File("./uploads/test.png"), Date())
+        ) is Either.Success}
     }
 
     @Test
@@ -48,6 +58,20 @@ class PhotosRepositoryTest {
         val emptyFeed = photosRepository.findAll(PhotoRequestParams.PhotosFeedRequestParams(2000, 100))
         assertTrue { emptyFeed.isSuccess() }
         assertTrue { (emptyFeed as Either.Success).result.isEmpty() }
+    }
 
+    @Test
+    fun testCreate() {
+        photosRepository.create(PhotoRequestParams.UploadPhotoRequestParams(
+            UserIdEntity(1001L), File("dont exist"), Date()
+        )).run {
+            assertTrue { this.isFailure() }
+        }
+
+        photosRepository.create(PhotoRequestParams.UploadPhotoRequestParams(
+            UserIdEntity(1001L), File("./uploads/test.png"), Date()
+        )).run {
+            assertTrue { this.isSuccess() }
+        }
     }
 }

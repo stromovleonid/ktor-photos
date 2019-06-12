@@ -23,13 +23,21 @@ class UserMetadataMapper : Mapper<UserMetadataEntity, UserMetadataModel> {
         )
 }
 
-class PhotosToModelMapper : ParametrizedToModelMapper<PhotoEntity, PhotoModel, UserMetadataModel> {
-    override fun toModel(entity: PhotoEntity, param: UserMetadataModel) =
+interface PhotosToModelMapper {
+    fun toModel(entity: PhotoEntity, param: UserMetadataModel, imageHost: String): PhotoModel
+}
+
+class PhotosToModelMapperImpl : PhotosToModelMapper {
+    private val externalUrlRegex =
+        Regex("(https?://(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?://(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})\n")
+
+    override fun toModel(entity: PhotoEntity, param: UserMetadataModel, imageHost: String) =
         PhotoModel(
             entity.id.id,
             param,
-            entity.url,
-            PhotoMetadataModel(entity.metadata.width, entity.metadata.height, entity.metadata.createdAt)
+            if (entity.url.isExternalUrl()) entity.url else (imageHost + entity.url),
+            PhotoMetadataModel(entity.metadata.createdAt)
         )
 
+    private fun String.isExternalUrl() = externalUrlRegex.matches(this)
 }

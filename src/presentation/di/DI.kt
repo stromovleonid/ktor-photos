@@ -12,21 +12,14 @@ import io.photos.data.repositories.PhotosRepository
 import io.photos.data.repositories.UserMetadataRepository
 import io.photos.domain.AuthConfig
 import io.photos.domain.entities.*
-import io.photos.domain.mappers.Mapper
-import io.photos.domain.mappers.ParametrizedToModelMapper
-import io.photos.domain.mappers.PhotosToModelMapper
-import io.photos.domain.mappers.UserMetadataMapper
-import io.photos.domain.model.PhotoModel
+import io.photos.domain.mappers.*
 import io.photos.domain.model.UserMetadataModel
 import io.photos.domain.requests.*
 import io.photos.domain.usecases.photos.PhotosUseCase
 import io.photos.domain.usecases.photos.PhotosUseCaseImpl
 import io.photos.domain.usecases.users.auth.AuthUseCase
 import io.photos.domain.usecases.users.auth.AuthUseCaseImpl
-import io.photos.domain.utils.AuthTokenProducer
-import io.photos.domain.utils.AuthTokenProducerImpl
-import io.photos.domain.utils.DispatchersProvider
-import io.photos.domain.utils.DispatchersProviderImpl
+import io.photos.domain.utils.*
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -35,10 +28,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 object KoinContainer {
     private val isInitialized = AtomicBoolean(false)
 
-    fun init() {
+    fun init(imageHost: String) {
         if (!isInitialized.getAndSet(true))
             startKoin {
-                modules(listOf(mappersModule, userMetadataModule, authModule, photosModule))
+                modules(listOf(mappersModule, userMetadataModule, authModule, photosModule(imageHost)))
             }
     }
 }
@@ -54,12 +47,15 @@ const val userTag = "user"
 const val photosTag = "photos"
 
 
-val photosModule = module {
+fun photosModule(imageHost: String) = module {
     single<PhotosUseCase> {
         PhotosUseCaseImpl(
-            get(), get(named("$photosTag$repositoryTag")),
+            get(),
+            get(),
+            imageHost,
+            get(named("$photosTag$repositoryTag")),
             get(named("$metadataTag$repositoryTag")),
-            get(named("$photosTag$mapperTag")),
+            get(),
             get(named("$metadataTag$mapperTag"))
         )
     }
@@ -67,9 +63,10 @@ val photosModule = module {
     single<Repository<PhotoEntity, PhotoRequestParams>>(named("$photosTag$repositoryTag")) {
         PhotosRepository(get(named("$photosTag$idProviderTag")), get(named("$photosTag$validatorTag")))
     }
-    single<ParametrizedToModelMapper<PhotoEntity, PhotoModel, UserMetadataModel>>(named("$photosTag$mapperTag")) { PhotosToModelMapper() }
+    single<PhotosToModelMapper>() { PhotosToModelMapperImpl() }
     single<IdProvider<PhotoIdEntity>>(named("$photosTag$idProviderTag")) { PhotoIdProvider(get()) }
     single<ParamsValidator<PhotoRequestParams>>(named("$photosTag$validatorTag")) { PhotoRequestParamsValidator() }
+    single<FileUploader> { FileUploaderImpl() }
 }
 
 

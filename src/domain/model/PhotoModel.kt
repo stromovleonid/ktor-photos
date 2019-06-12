@@ -9,4 +9,4 @@ data class PhotoModel(
     val metadata: PhotoMetadataModel
 ): Model
 
-data class PhotoMetadataModel(val width: Int, val height: Int, val createdAt: Date): Model
+data class PhotoMetadataModel(val createdAt: Date): Model

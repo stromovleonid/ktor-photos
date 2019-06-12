@@ -22,7 +22,7 @@ const val invalidUsername = "invalid 12345678901234567890"
 object Dependencies: KoinComponent {
 
     init {
-        KoinContainer.init()
+        KoinContainer.init("http://0.0.0.0:8080/photos/download")
     }
 
     val userMetadataUseCase by inject<UserMetadataUseCase>()

@@ -24,7 +24,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
 
-    KoinContainer.init()
+    KoinContainer.init("http://0.0.0.0:8080/photos/download")
 
     install(ContentNegotiation) {
         gson {

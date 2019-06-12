@@ -27,12 +27,12 @@ class PhotosRepository(
                     idProvider.provideNext(),
                     UserIdEntity(random.nextLong(0, 1000)),
                     "https://picsum.photos/$w/$h",
-                    PhotoMetadataEntity(w, h, Date())
+                    PhotoMetadataEntity(Date())
                 )
             )
         }
 
-        repeat(100) {
+        repeat(1) {
             val w = random.nextInt(100, 1000)
             val h = random.nextInt(100, 1000)
             add(
@@ -40,14 +40,22 @@ class PhotosRepository(
                     idProvider.provideNext(),
                     UserIdEntity(1001L),
                     "https://picsum.photos/$w/$h",
-                    PhotoMetadataEntity(w, h, Date())
+                    PhotoMetadataEntity(Date())
                 )
             )
         }
     }
 
     override fun performCreate(params: PhotoRequestParams): Either<PhotoEntity, RepositoryException> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        params as PhotoRequestParams.UploadPhotoRequestParams
+        val newPhoto = PhotoEntity(
+            idProvider.provideNext(),
+            params.authorId,
+            "/${params.photoFile.name}",
+            PhotoMetadataEntity(params.createdAt)
+        )
+        photos.add(newPhoto)
+        return Either.Success(newPhoto)
     }
 
     override fun performRead(params: PhotoRequestParams): Either<PhotoEntity, RepositoryException> {
@@ -68,7 +76,11 @@ class PhotosRepository(
         }
     }
 
-    private fun findAll(pageIndex: Int, pageSize: Int, predicate: (PhotoEntity) -> Boolean): Either<List<PhotoEntity>, RepositoryException>  {
+    private fun findAll(
+        pageIndex: Int,
+        pageSize: Int,
+        predicate: (PhotoEntity) -> Boolean
+    ): Either<List<PhotoEntity>, RepositoryException> {
         val fromIndex = pageIndex * pageSize
         val toIndex = (pageIndex + 1) * pageSize
 

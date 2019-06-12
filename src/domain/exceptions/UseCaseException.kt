@@ -52,3 +52,8 @@ class ParseParamsException(params: Any?, expectedClass: KClass<*>): UseCaseExcep
 
     override val message = "Params $params cannot be parsed as ${expectedClass.simpleName}"
 }
+
+
+object FileUploadingException: UseCaseException() {
+    override val apiMessage = "Uploading error"
+}

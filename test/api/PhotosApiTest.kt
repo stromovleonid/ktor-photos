@@ -72,6 +72,5 @@ class PhotosApiTest: ApiTest() {
                 assertEquals(HttpStatusCode.BadRequest, response.status())
             }
         }
-
     }
 }
