@@ -11,6 +11,10 @@ sealed class Either<S, F> {
     data class Success<S, F>(val result: S) : Either<S, F>()
 
     data class Failure<S, F>(val error: F) : Either<S, F>()
+
+    fun isFailure() = this is Failure
+
+    fun isSuccess() = this is Success
 }
 
 fun <S, F : Throwable> Either<S, F>.getOrThrow() =
@@ -19,7 +23,7 @@ fun <S, F : Throwable> Either<S, F>.getOrThrow() =
     else
         throw throw (this as Either.Failure).error
 
-private fun <S, F, MS, MF> Either<S, F>.mapBoth(resultMapper: S.() -> MS, failureMapper: F.() -> MF): Either<MS, MF> {
+fun <S, F, MS, MF> Either<S, F>.mapBoth(resultMapper: S.() -> MS, failureMapper: F.() -> MF): Either<MS, MF> {
     return if (this is Either.Success) Either.Success(this.result.resultMapper())
     else Either.Failure((this as Either.Failure).error.failureMapper())
 }
@@ -41,6 +45,11 @@ fun <S : Entity, F, MS : Model, MF> Either<List<S>, F>.mapListToModel(
 fun <S, F, MF> Either<S, F>.mapFailure(failureMapper: F.() -> MF): Either<S, MF> {
     return mapBoth({ this }, failureMapper)
 }
+
+fun <S, F, MS> Either<S, F>.mapResult(resultMapper: S.() -> MS): Either<MS, F> {
+    return mapBoth(resultMapper, { this })
+}
+
 
 
 fun <S : Any, F : UseCaseException> Either<S, F>.toApiResponse(): Any {

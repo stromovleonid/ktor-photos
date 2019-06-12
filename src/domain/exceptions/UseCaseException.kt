@@ -20,6 +20,12 @@ object NotFoundException: UseCaseException() {
     override val apiCode = HttpStatusCode.NotFound
 }
 
+object UnauthorizedException: UseCaseException() {
+    override val apiMessage = "Unauthorized"
+
+    override val apiCode = HttpStatusCode.Unauthorized
+}
+
 object UnknownException: UseCaseException() {
     override val apiMessage = "UnknownException"
 }
@@ -32,9 +38,14 @@ class ModelValidationException(original: ValidationException): UseCaseException(
 
 class InvalidParamsException(params: Any?, override val cause: Exception): UseCaseException() {
     override val apiMessage = "Invalid params $params"
-
     override val message = "Invalid params $params"
 }
+
+class AlreadyTakenException(params: Any?, override val cause: Exception): UseCaseException() {
+    override val apiMessage = "Already taken - $params"
+    override val message = "Already taken - $params"
+}
+
 
 class ParseParamsException(params: Any?, expectedClass: KClass<*>): UseCaseException(){
     override val apiMessage = "Invalid params $params, expected to be ${expectedClass.simpleName}"

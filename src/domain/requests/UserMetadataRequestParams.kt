@@ -44,13 +44,4 @@ class UserMetadataRequestParamsValidator : ParamsValidator<UserMetadataRequestPa
         }
     }
 
-
-    private fun validateUsername(username: UsernameEntity): Either<ResultOk, ValidationException> {
-        return username.let {
-            if (it.username.length in (0..20))
-                Either.Success(ResultOk)
-            else Either.Failure(InvalidUsernameException(it.username))
-        }
-    }
-
 }

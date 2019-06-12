@@ -7,11 +7,10 @@ import data.exceptions.InvalidRequestParamsException
 import data.exceptions.RepositoryException
 import io.photos.domain.requests.RequestParams
 import io.photos.domain.utils.Either
-import io.photos.domain.utils.ResultOk
 
 
 interface Repository<E: Entity, P: RequestParams> {
-    fun create(params: P): Either<ResultOk, RepositoryException>
+    fun create(params: P): Either<E, RepositoryException>
 
     fun read(params: P): Either<E, RepositoryException>
     fun findAll(params: P): Either<List<E>, RepositoryException>
@@ -35,7 +34,7 @@ abstract class AbstractRepository<E: Entity, P: RequestParams>(private val valid
         }
     }
 
-    override fun create(params: P): Either<ResultOk, RepositoryException> = validateAndExecute(params) {
+    override fun create(params: P): Either<E, RepositoryException> = validateAndExecute(params) {
         performCreate(params)
     }
 
@@ -47,7 +46,7 @@ abstract class AbstractRepository<E: Entity, P: RequestParams>(private val valid
         performFindAll(params)
     }
 
-    abstract fun performCreate(params: P): Either<ResultOk, RepositoryException>
+    abstract fun performCreate(params: P): Either<E, RepositoryException>
 
     abstract fun performRead(params: P): Either<E, RepositoryException>
 
