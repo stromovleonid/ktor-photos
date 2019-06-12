@@ -12,3 +12,7 @@ interface ModelToEntityMapper<E: Entity, M: Model> {
 }
 
 interface Mapper<E: Entity, M: Model>: EntityToModelMapper<E, M>, ModelToEntityMapper<E, M>
+
+interface ParametrizedToModelMapper<E: Entity, M: Model, P: Any> {
+    fun toModel(entity: E, param: P): M
+}

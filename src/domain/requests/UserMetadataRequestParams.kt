@@ -35,6 +35,7 @@ class UserMetadataRequestParamsValidator : ParamsValidator<UserMetadataRequestPa
             is UserMetadataRequestParams.FindUserMetadataRequestParams -> {
                 return if (params.pageIndex >= 0
                     && params.pageSize < 101
+                    && params.pageSize > 0
                 )
                     Either.Success(ResultOk)
                 else Either.Failure(InvalidParamsException(params))

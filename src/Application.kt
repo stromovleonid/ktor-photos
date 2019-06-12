@@ -13,6 +13,7 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.photos.presentation.api.AuthApi.auth
 import io.photos.presentation.api.AuthApi.initAuth
+import io.photos.presentation.api.PhotosApi.photos
 import io.photos.presentation.api.UsersApi.users
 import io.photos.presentation.di.KoinContainer
 import java.util.*
@@ -39,7 +40,7 @@ fun Application.module(testing: Boolean = false) {
         }
 
         auth()
-
         users()
+        photos()
     }
 }

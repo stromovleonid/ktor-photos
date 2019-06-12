@@ -95,7 +95,7 @@ class UserMetadataRepositoryTest {
             )
         )
         assertTrue { findByIdResult is Either.Success }
-        assertEquals((findByIdResult as Either.Success).result.id, 1L)
+        assertEquals((findByIdResult as Either.Success).result.id.id, 1L)
     }
 
     @Test
