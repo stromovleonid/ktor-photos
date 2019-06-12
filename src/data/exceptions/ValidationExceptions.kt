@@ -13,6 +13,6 @@ class InvalidUserIdException(id: Long): ValidationException() {
     override val message = "Invalid user id $id"
 }
 
-class InvalidParamsException(params: RequestParams): ValidationException() {
-    override val message = "Invalid params \"$params\""
+class InvalidParamsException(params: RequestParams, cause: String? = null): ValidationException() {
+    override val message = "Invalid params \"$params\". " + (cause ?: "")
 }

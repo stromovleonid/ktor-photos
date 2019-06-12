@@ -20,7 +20,7 @@ class UserMetadataRepository(
     AbstractRepository<UserMetadataEntity, UserMetadataRequestParams>(validator = paramsValidator) {
 
     private val users = mutableListOf<UserMetadataEntity>().apply {
-        add(UserMetadataEntity(1L, UsernameEntity("dsfd"), Date(), AvatarEntity("sdfsdf")))
+        add(UserMetadataEntity(1001L, UsernameEntity("test_username"), Date(), AvatarEntity()))
     }
 
     override fun performCreate(params: UserMetadataRequestParams): Either<ResultOk, RepositoryException> {

@@ -4,12 +4,15 @@ import com.google.gson.internal.bind.DateTypeAdapter
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.authenticate
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.routing
+import io.photos.presentation.api.AuthApi.auth
+import io.photos.presentation.api.AuthApi.initAuth
 import io.photos.presentation.api.UsersApi.users
 import io.photos.presentation.di.KoinContainer
 import java.util.*
@@ -28,10 +31,14 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    initAuth()
+
     routing {
         get("/") {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
+
+        auth()
 
         users()
     }

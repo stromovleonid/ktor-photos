@@ -13,13 +13,29 @@ import io.photos.domain.usecases.UseCase
 import io.photos.domain.utils.*
 import java.lang.Exception
 
-class UserMetadataUseCase(
+
+interface UserMetadataUseCase {
+
+    suspend fun create(username: String): Either<ResultOk, UseCaseException>
+
+    suspend fun findAll(
+        query: String?,
+        ignoreCase: String?,
+        pageIndex: String?,
+        pageSize: String?
+    ): Either<List<UserMetadataModel>, UseCaseException>
+
+    suspend fun findById(id: String?): Either<UserMetadataModel, UseCaseException>
+}
+
+
+class UserMetadataUseCaseImpl(
     dispatchersProvider: DispatchersProvider,
     private val repository: Repository<UserMetadataEntity, UserMetadataRequestParams>,
     private val metadataMapper: Mapper<UserMetadataEntity, UserMetadataModel>
-) : UseCase(dispatchersProvider) {
+) : UseCase(dispatchersProvider), UserMetadataUseCase {
 
-    suspend fun create(username: String): Either<ResultOk, UseCaseException> {
+    override suspend fun create(username: String): Either<ResultOk, UseCaseException> {
         return onIOAsync {
             val result = repository.create(
                 UserMetadataRequestParams.CreateUserMetadataRequestParams(
@@ -34,7 +50,7 @@ class UserMetadataUseCase(
         }.await()
     }
 
-    suspend fun findAll(
+    override suspend fun findAll(
         query: String?,
         ignoreCase: String?,
         pageIndex: String?,
@@ -71,7 +87,7 @@ class UserMetadataUseCase(
         }.await()
     }
 
-    suspend fun findById(id: String?): Either<UserMetadataModel, UseCaseException> {
+    override suspend fun findById(id: String?): Either<UserMetadataModel, UseCaseException> {
         return onIOAsync {
 
             val longId = try {

@@ -4,6 +4,7 @@ import domain.usecases.users.metadata.UserMetadataUseCase
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.ktor.routing.Route
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.photos.domain.utils.getApiResponseCode
@@ -15,7 +16,7 @@ object UsersApi: KoinComponent {
 
     private val useCase by inject<UserMetadataUseCase>()
 
-    fun Routing.users() {
+    fun Route.users() {
         get("/users/{id}") {
             val result = useCase.findById(call.parameters["id"])
             call.respond(result.getApiResponseCode(), result.toApiResponse())

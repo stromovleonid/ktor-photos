@@ -20,6 +20,12 @@ object NotFoundException: UseCaseException() {
     override val apiCode = HttpStatusCode.NotFound
 }
 
+object UnauthorizedException: UseCaseException() {
+    override val apiMessage = "Unauthorized"
+
+    override val apiCode = HttpStatusCode.Unauthorized
+}
+
 object UnknownException: UseCaseException() {
     override val apiMessage = "UnknownException"
 }

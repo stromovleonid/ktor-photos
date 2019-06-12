@@ -11,6 +11,7 @@ import kotlin.test.assertTrue
 class UsersApiTest: ApiTest() {
     @Test
     fun testFindById() = runBlocking {
+        Dependencies.userMetadataUseCase.create("TestUser")
 
         test {
             handleRequest(HttpMethod.Get, "/users/1000").apply {
@@ -32,7 +33,6 @@ class UsersApiTest: ApiTest() {
     @Test
     fun testSearchAll() = runBlocking {
         Dependencies.userMetadataUseCase.create("TestUser")
-
 
         test {
             handleRequest(HttpMethod.Get, "/users/").apply {
