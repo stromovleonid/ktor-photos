@@ -13,6 +13,7 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.photos.presentation.api.AuthApi.auth
 import io.photos.presentation.api.AuthApi.initAuth
+import io.photos.presentation.api.PhotosApi.photos
 import io.photos.presentation.api.UsersApi.users
 import io.photos.presentation.di.KoinContainer
 import java.util.*
@@ -23,7 +24,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
 
-    KoinContainer.init()
+    KoinContainer.init("http://0.0.0.0:8080/photos/download")
 
     install(ContentNegotiation) {
         gson {
@@ -39,7 +40,7 @@ fun Application.module(testing: Boolean = false) {
         }
 
         auth()
-
         users()
+        photos()
     }
 }
