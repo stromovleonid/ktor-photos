@@ -42,7 +42,7 @@ class UserMetadataUseCaseImpl(
                     UsernameEntity(username)
                 )
             )
-            result.mapFailure {
+            result.mapBoth({ ResultOk }) {
                 if (this is ValidationException)
                     ModelValidationException(this)
                 else UnknownException

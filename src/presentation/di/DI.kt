@@ -74,6 +74,7 @@ val authModule = module {
             get(named("$authTag$repositoryTag")),
             get(named("$metadataTag$repositoryTag")),
             get(named("$metadataTag$mapperTag")),
+            get(),
             get()
         )
     }

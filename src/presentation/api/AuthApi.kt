@@ -10,6 +10,7 @@ import io.ktor.auth.UserPasswordCredential
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.request.receive
+import io.ktor.request.receiveParameters
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.post
@@ -45,7 +46,14 @@ object AuthApi : KoinComponent {
 
     fun Routing.auth() {
         post("/login") {
-            val result = authUseCase.performAuth(call.parameters["login"], call.parameters["password"])
+            val params = call.receiveParameters()
+            val result = authUseCase.performAuth(params["login"], params["password"])
+            call.respond(result.getApiResponseCode(), result.toApiResponse())
+        }
+
+        post("/register") {
+            val params = call.receiveParameters()
+            val result = authUseCase.register(params["login"], params["password"])
             call.respond(result.getApiResponseCode(), result.toApiResponse())
         }
     }

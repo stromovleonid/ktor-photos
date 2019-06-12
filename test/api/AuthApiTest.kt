@@ -1,39 +1,71 @@
 package api
 
-import Dependencies.authUseCase
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.server.testing.handleRequest
-import io.photos.domain.utils.Either
+import io.ktor.server.testing.setBody
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class AuthApiTest: ApiTest() {
     @Test
     fun testLogin() = runBlocking {
 
-        val validToken = authUseCase.performAuth("test", "test")
-
         test {
             handleRequest(HttpMethod.Post, "/login"){
-                addHeader("Authorization", "Bearer invalid_token")
+                setBody(listOf("login" to "test", "password" to "test").formUrlEncode())
+                addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             }.apply {
-                assertEquals(HttpStatusCode.Unauthorized, response.status())
-            }
-        }
-
-        test {
-            handleRequest(HttpMethod.Post, "/login").apply {
-                assertEquals(HttpStatusCode.Unauthorized, response.status())
+                assertEquals(HttpStatusCode.OK, response.status())
             }
         }
 
         test {
             handleRequest(HttpMethod.Post, "/login"){
-                addHeader("Authorization", "Bearer ${(validToken as Either.Success).result.token}")
+                setBody(listOf("login" to "test2", "password" to "test3").formUrlEncode())
+                addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             }.apply {
-                assertEquals(HttpStatusCode.Unauthorized, response.status())
+                assertNotEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+
+        test {
+            handleRequest(HttpMethod.Post, "/login"){
+                setBody(listOf("login" to "").formUrlEncode())
+                addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+            }.apply {
+                assertNotEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun testRegister() = runBlocking {
+        test {
+            handleRequest(HttpMethod.Post, "/register"){
+                setBody(listOf("login" to "test", "password" to "test").formUrlEncode())
+                addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.BadRequest, response.status())
+            }
+        }
+
+        test {
+            handleRequest(HttpMethod.Post, "/register"){
+                setBody(listOf("login" to "test32423", "password" to "test234324").formUrlEncode())
+                addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+
+        test {
+            handleRequest(HttpMethod.Post, "/register"){
+                setBody(listOf("login" to "test", "password" to "test").formUrlEncode())
+                addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.BadRequest, response.status())
             }
         }
     }

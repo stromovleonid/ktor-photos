@@ -22,3 +22,11 @@ class UnsupportedRequestParamsException(params: RequestParams): RepositoryExcept
 class DataNotFoundException(repositoryClass: KClass<*>,params: RequestParams): RepositoryException() {
     override val message = "Noting found for params $params in ${repositoryClass.simpleName}"
 }
+
+class LoginAlreadyTakenException(repositoryClass: KClass<*>,params: RequestParams): RepositoryException() {
+    override val message = "Login already taken, params $params in ${repositoryClass.simpleName}"
+}
+
+class IdAlreadyTakenException(repositoryClass: KClass<*>,params: RequestParams): RepositoryException() {
+    override val message = "Id already taken, params $params in ${repositoryClass.simpleName}"
+}
