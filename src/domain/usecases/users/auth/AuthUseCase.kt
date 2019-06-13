@@ -22,8 +22,8 @@ import io.photos.domain.utils.mapBoth
 
 interface AuthUseCase {
     suspend fun performAuth(login: String?, password: String?): Either<AuthenticatedUserModel, UseCaseException>
-
     suspend fun register(login: String?, password: String?): Either<AuthenticatedUserModel, UseCaseException>
+    suspend fun refreshToken(userId: Long?): Either<AuthenticatedUserModel, UseCaseException>
 }
 
 class AuthUseCaseImpl(
@@ -34,6 +34,24 @@ class AuthUseCaseImpl(
     private val authTokenProducer: AuthTokenProducer,
     private val idProvider: IdProvider<Long>
 ) : UseCase(dispatchersProvider), AuthUseCase {
+
+    override suspend fun refreshToken(userId: Long?): Either<AuthenticatedUserModel, UseCaseException> = onIOAsync {
+        if (userId == null)
+            return@onIOAsync Either.Failure<AuthenticatedUserModel, UseCaseException>(UnauthorizedException)
+
+        val userMetadata =
+            metadataRepository.read(UserMetadataRequestParams.FindUserMetadataByIdRequestParams(userId))
+        return@onIOAsync userMetadata.mapBoth({
+            AuthenticatedUserModel(
+                authTokenProducer.produce(userId),
+                metadataMapper.toModel(this)
+            )
+        }) {
+            if (this is DataNotFoundException)
+                NotFoundException
+            else UnknownException
+        }
+    }
 
     override suspend fun performAuth(
         login: String?,

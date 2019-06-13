@@ -55,4 +55,15 @@ class AuthUseCaseTest {
             assertTrue { (this as Either.Failure).error is AlreadyTakenException }
         }
     }
+
+    @Test
+    fun testRefresh() = runBlocking {
+        authUseCase.refreshToken(1001).run {
+            assertTrue { this.isSuccess() }
+        }
+
+        authUseCase.refreshToken(100100).run {
+            assertTrue { this.isFailure() }
+        }
+    }
 }
