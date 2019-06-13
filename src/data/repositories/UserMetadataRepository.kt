@@ -1,13 +1,12 @@
 package io.photos.data.repositories
 
-import domain.repositories.AbstractRepository
-import io.photos.data.providers.IdProvider
 import data.exceptions.RepositoryException
 import data.exceptions.UnsupportedRequestParamsException
+import domain.repositories.AbstractRepository
+import io.photos.data.providers.IdProvider
 import io.photos.domain.entities.*
 import io.photos.domain.requests.UserMetadataRequestParams
 import io.photos.domain.utils.Either
-import io.photos.domain.utils.ResultOk
 import java.util.*
 
 class UserMetadataRepository(

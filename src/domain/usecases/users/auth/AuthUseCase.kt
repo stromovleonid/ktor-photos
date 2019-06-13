@@ -63,7 +63,7 @@ class AuthUseCaseImpl(
             } else
                 return@onIOAsync Either.Failure<AuthenticatedUserModel, UseCaseException>(UnauthorizedException)
 
-        }.await()
+        }
 
 
     override suspend fun register(
@@ -112,5 +112,5 @@ class AuthUseCaseImpl(
                     }
                 )
 
-        }.await()
+        }
 }

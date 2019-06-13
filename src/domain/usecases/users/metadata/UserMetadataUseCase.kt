@@ -47,7 +47,7 @@ class UserMetadataUseCaseImpl(
                     ModelValidationException(this)
                 else UnknownException
             }
-        }.await()
+        }
     }
 
     override suspend fun findAll(
@@ -84,7 +84,7 @@ class UserMetadataUseCaseImpl(
                     NotFoundException
                 else UnknownException
             }
-        }.await()
+        }
     }
 
     override suspend fun findById(id: String?): Either<UserMetadataModel, UseCaseException> {
@@ -114,6 +114,6 @@ class UserMetadataUseCaseImpl(
                     NotFoundException
                 else UnknownException
             }
-        }.await()
+        }
     }
 }

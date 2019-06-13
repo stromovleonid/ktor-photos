@@ -128,7 +128,7 @@ class PhotosUseCaseImpl(
                     NotFoundException
                 else UnknownException
             }
-        }.await()
+        }
     }
 
     override suspend fun feed(pageIndex: String?, pageSize: String?): Either<List<PhotoModel>, UseCaseException> {
@@ -168,7 +168,7 @@ class PhotosUseCaseImpl(
                     NotFoundException
                 else UnknownException
             }
-        }.await()
+        }
     }
 
 }
