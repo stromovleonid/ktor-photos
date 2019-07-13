@@ -1,10 +1,8 @@
 package io.photos
 
-import com.google.gson.internal.bind.DateTypeAdapter
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.auth.authenticate
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
@@ -16,7 +14,6 @@ import io.photos.presentation.api.AuthApi.initAuth
 import io.photos.presentation.api.PhotosApi.photos
 import io.photos.presentation.api.UsersApi.users
 import io.photos.presentation.di.KoinContainer
-import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -28,7 +25,7 @@ fun Application.module(testing: Boolean = false) {
 
     install(ContentNegotiation) {
         gson {
-            registerTypeAdapter(Date::class.java, DateTypeAdapter())
+            setDateFormat("dd-MM-yyyy, HH:mm")
         }
     }
 

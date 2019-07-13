@@ -28,8 +28,6 @@ interface PhotosToModelMapper {
 }
 
 class PhotosToModelMapperImpl : PhotosToModelMapper {
-    private val externalUrlRegex =
-        Regex("(https?://(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?://(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})\n")
 
     override fun toModel(entity: PhotoEntity, param: UserMetadataModel, imageHost: String) =
         PhotoModel(
@@ -39,5 +37,5 @@ class PhotosToModelMapperImpl : PhotosToModelMapper {
             PhotoMetadataModel(entity.metadata.createdAt)
         )
 
-    private fun String.isExternalUrl() = externalUrlRegex.matches(this)
+    private fun String.isExternalUrl() = this.startsWith("http")
 }
